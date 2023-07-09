@@ -2,14 +2,63 @@
 
 <head>
   <title> AnimAIs </title>
+  <style>
+    body {
+      font-family: "Chalkboard SE", "Comic Neue", "Open Sans", "Comic Sans MS", "Comic Sans", sans-serif;
+      margin: 0px;
+      padding: 0px;
+      display: flex;
+      background-image: linear-gradient(lightblue, white);
+      background-repeat: no-repeat;
+      background-size: cover;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-top: 100px;
+    }
+
+    #canvas {
+      border-style: solid;
+      border-radius: 10px;
+      padding: 30px;
+      height: 500;
+      width: 1000;
+      background-color: lightgrey;
+    }
+
+    form {
+      height: 100;
+      width: 200;
+      margin-top: 30px;
+      border-radius: 10px;
+      border-style: solid;
+      border-width: 10;
+    }
+
+    button {
+      height: 150;
+      width: 300;
+      font-size: 20px;
+      padding: 5px;
+      border-style: none;
+      color: black;
+      background-color: lightblue;
+    }
+  </style>
 </head>
 
 <body>
   <h1> AnimAIs </h1>
-  <h3> Desenhe aqui o seu bichinho preferido! </h3>
-  <canvas id="myCanvas" width="300" height="300"></canvas>
-  <form id="sendImage"><button name=button class="btn-primary">Make prediction</button></form>
-  <h1 id="prediction"></h1>
+  <h3> Desenhe aqui o seu bichinho preferido! :) </h3>
+  <div id="canvas">
+    <canvas id="myCanvas" width="300" height="300"></canvas>
+  </div>
+  <form id="sendImage"><button name=button class="btn-primary">Adivinhe!!</button></form>
+  <h2 id="prediction" style="color: blue;"> </h2>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.5.2/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-cpu"></script>
@@ -76,7 +125,7 @@
       //return tensor.div(255.0); // Normalize [0..255] values into [0..1] range
     }
 
-    const model = tflite.loadTFLiteModel("https://github.com/LucasCta/Doodle_Identification/raw/main/model/model.tflite");
+    const model = tflite.loadTFLiteModel("https://github.com/LucasCta/Doodle_Identification/raw/main/model/model(2)(1).tflite");
 
     let animals = ['ant', 'bat', 'bear', 'bee', 'bird', 'butterfly', 'camel', 'cat', 'cow', 'crab', 'crocodile', 'dog', 'dolphin', 'dragon', 'duck', 'elephant', 'fish', 'flamingo', 'frog', 'giraffe', 'hedgehog', 'horse', 'kangaroo', 'lion', 'lobster', 'monkey', 'mosquito', 'mouse', 'octopus', 'owl', 'panda', 'parrot', 'penguin', 'pig', 'rabbit', 'raccoon', 'rhinoceros', 'scorpion', 'shark', 'sheep', 'snail', 'snake', 'spider', 'squirrel', 'swan', 'tiger', 'whale', 'zebra'];
 
