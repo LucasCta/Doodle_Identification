@@ -1,95 +1,105 @@
-<canvas id="myCanvas" width="300" height="300"></canvas>
-<form id="sendImage"><button name=button class="btn-primary">Make prediction</button></form>
-<h1 id="prediction"></h1>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.5.2/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-cpu"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite/dist/tf-tflite.min.js"></script>
-<script>
+<!DOCTYPE html>
 
-  const canvas = document.getElementById("myCanvas"); // Creates a canvas element
-  const context = canvas.getContext("2d");
+<head>
+  <title> AnimAIs </title>
+</head>
 
-  let mouseDown = false;
-  let lastX;
-  let lastY;
+<body>
+  <h1> AnimAIs </h1>
+  <h3> Desenhe aqui o seu bichinho preferido! </h3>
+  <canvas id="myCanvas" width="300" height="300"></canvas>
+  <form id="sendImage"><button name=button class="btn-primary">Make prediction</button></form>
+  <h1 id="prediction"></h1>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.5.2/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-cpu"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite/dist/tf-tflite.min.js"></script>
+  <script>
 
-  function drawLine(x, y, lastX, lastY) {
-    context.strokeStyle = "#000000";
-    context.lineWidth = 12;
-    context.lineJoin = "round";
+    const canvas = document.getElementById("myCanvas"); // Creates a canvas element
+    const context = canvas.getContext("2d");
 
-    context.beginPath();
-    context.moveTo(lastX, lastY);
-    context.lineTo(x, y);
-    context.closePath();
-    context.stroke();
+    let mouseDown = false;
+    let lastX;
+    let lastY;
 
-    return [x, y];
-  }
+    function drawLine(x, y, lastX, lastY) {
+      context.strokeStyle = "#000000";
+      context.lineWidth = 12;
+      context.lineJoin = "round";
 
-  function handleMousedown() {
-    mouseDown = true;
-  };
+      context.beginPath();
+      context.moveTo(lastX, lastY);
+      context.lineTo(x, y);
+      context.closePath();
+      context.stroke();
 
-  function handleMouseup() {
-    mouseDown = false;
-    [lastX, lastY] = [undefined, undefined]; // Undefined until first click
-  };
-
-  function handleMousemove(e) {
-    const rect = e.target.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    if (mouseDown) {
-      [lastX, lastY] = drawLine(x, y, lastX, lastY);
+      return [x, y];
     }
-  };
 
-  // The code below is what makes the canvas "drawable" and gives it a nice black border.
-  canvas.addEventListener("mousedown", handleMousedown);
-  canvas.addEventListener("mouseup", handleMouseup);
-  canvas.addEventListener("mousemove", handleMousemove);
+    function handleMousedown() {
+      mouseDown = true;
+    };
 
-  context.fillStyle = "#ffffff"; "#000000"
-  context.fillRect(0, 0, 300, 300);
+    function handleMouseup() {
+      mouseDown = false;
+      [lastX, lastY] = [undefined, undefined]; // Undefined until first click
+    };
 
-  preprocessCanvas = () => {
-    let tensor = tf
-      .browser.fromPixels(canvas) // Shape: (300, 300, 3) - RGB image
-      .resizeNearestNeighbor([28, 28]) // Shape: (28, 28, 3) - RGB image
-      .mean(2) // Shape: (28, 28) - grayscale
-      .expandDims(2) // Shape: (28, 28, 1) - network expects 3d values with channels in the last dimension
-      .expandDims() // Shape: (1, 28, 28, 1) - network makes predictions for "batches" of images
-      .toFloat(); // Network works with floating points inputs
-    return tensor
-    //return tensor.div(255.0); // Normalize [0..255] values into [0..1] range
-  }
+    function handleMousemove(e) {
+      const rect = e.target.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
 
-  model = tflite.loadTFLiteModel("https://github.com/LucasCta/Doodle_Identification/raw/main/model/model(2).tflite");
+      if (mouseDown) {
+        [lastX, lastY] = drawLine(x, y, lastX, lastY);
+      }
+    };
 
-  animals = ['ant', 'bat', 'bear', 'bee', 'bird', 'butterfly', 'camel', 'cat', 'cow', 'crab', 'crocodile', 'dog', 'dolphin', 'dragon', 'duck', 'elephant', 'fish', 'flamingo', 'frog', 'giraffe', 'hedgehog', 'horse', 'kangaroo', 'lion', 'lobster', 'monkey', 'mosquito', 'mouse', 'octopus', 'owl', 'panda', 'parrot', 'penguin', 'pig', 'rabbit', 'raccoon', 'rhinoceros', 'scorpion', 'shark', 'sheep', 'snail', 'snake', 'spider', 'squirrel', 'swan', 'tiger', 'whale', 'zebra'];
+    // The code below is what makes the canvas "drawable" and gives it a nice black border.
+    canvas.addEventListener("mousedown", handleMousedown);
+    canvas.addEventListener("mouseup", handleMouseup);
+    canvas.addEventListener("mousemove", handleMousemove);
 
-  const form = document.getElementById("sendImage");
-  form.button.onclick = event => {
-    event.preventDefault();
-    model.then(function (res) {
-      const predictions = res.predict(preprocessCanvas()).dataSync()
-      const top3 = Array.from(predictions)
-        .map((p, i) => ({
-          probability: p,
-          className: animals[i],
-          index: i,
-        }))
-        .sort((a, b) => b.probability - a.probability)
-        .slice(0, 3)
-      a = document.getElementById("prediction");
-      a.innerHTML = top3[0].className;
-      console.log(top3);
-    }, function (err) {
-      console.log(err);
-    });
-  };
+    context.fillStyle = "#ffffff"; "#000000"
+    context.fillRect(0, 0, 300, 300);
 
-</script>
+    preprocessCanvas = () => {
+      let tensor = tf
+        .browser.fromPixels(canvas) // Shape: (300, 300, 3) - RGB image
+        .resizeNearestNeighbor([28, 28]) // Shape: (28, 28, 3) - RGB image
+        .mean(2) // Shape: (28, 28) - grayscale
+        .expandDims(2) // Shape: (28, 28, 1) - network expects 3d values with channels in the last dimension
+        .expandDims() // Shape: (1, 28, 28, 1) - network makes predictions for "batches" of images
+        .toFloat(); // Network works with floating points inputs
+      return tensor
+      //return tensor.div(255.0); // Normalize [0..255] values into [0..1] range
+    }
+
+    const model = tflite.loadTFLiteModel("https://github.com/LucasCta/Doodle_Identification/raw/main/model/model.tflite");
+
+    let animals = ['ant', 'bat', 'bear', 'bee', 'bird', 'butterfly', 'camel', 'cat', 'cow', 'crab', 'crocodile', 'dog', 'dolphin', 'dragon', 'duck', 'elephant', 'fish', 'flamingo', 'frog', 'giraffe', 'hedgehog', 'horse', 'kangaroo', 'lion', 'lobster', 'monkey', 'mosquito', 'mouse', 'octopus', 'owl', 'panda', 'parrot', 'penguin', 'pig', 'rabbit', 'raccoon', 'rhinoceros', 'scorpion', 'shark', 'sheep', 'snail', 'snake', 'spider', 'squirrel', 'swan', 'tiger', 'whale', 'zebra'];
+
+    const form = document.getElementById("sendImage");
+    form.button.onclick = event => {
+      event.preventDefault();
+      model.then(function (res) {
+        const predictions = res.predict(preprocessCanvas()).dataSync()
+        const top3 = Array.from(predictions)
+          .map((p, i) => ({
+            probability: p,
+            className: animals[i],
+            index: i,
+          }))
+          .sort((a, b) => b.probability - a.probability)
+          .slice(0, 3)
+        a = document.getElementById("prediction");
+        a.innerHTML = top3[0].className;
+        console.log(top3);
+      }, function (err) {
+        console.log(err);
+      });
+    };
+
+  </script>
+</body>
